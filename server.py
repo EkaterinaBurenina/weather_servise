@@ -2,6 +2,7 @@ from flask import Flask, request
 
 import requests
 import json
+import os
 
 app = Flask(__name__)
 
@@ -13,12 +14,20 @@ def current_weather():
     return json.dumps(temp_info)
 
 
-def get_temp_city(city: str):
+@app.route("/v1/forecast/")
+def forecast_weather():
+    city = request.args.get('city')
+    dt = request.args.get('dt')
+    temp_info = get_temp_city(city, dt)
+    return json.dumps(temp_info)
+
+
+def get_temp_city(city: str, dt=None):
 
     result = {
         'city': '',
         'unit': 'celsius',
-        'temerature': None
+        'temperature': None
     }
 
     url = 'https://api.weather.yandex.ru/v1/forecast'
@@ -31,7 +40,12 @@ def get_temp_city(city: str):
     respons = json.loads(raw_response.text)
 
     result['city'] = city
-    result['temerature'] = respons['fact']['temp']
+    result['temperature'] = respons['fact']['temp']
+
+    if dt:
+        for item in respons['forecasts']:
+            if dt == item['date']:
+                result['temperature'] = item['parts']['day']['temp_avg']
 
     return result
 
@@ -49,4 +63,4 @@ def get_geocode(city):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=int(os.getenv('LISTEN_PORT', 5000)))
