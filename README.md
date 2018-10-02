@@ -4,7 +4,7 @@
 # Установка
 -  ``` git clone git@github.com:EkaterinaBurenina/weather_servise.git  ```
 - ``` cd weather_service```
-- ``` export LISTRN_PORT=8003```
+- ``` export LISTEN_PORT=8003```
 - ``` python3 server.py```
 
 # Примеры запросов
